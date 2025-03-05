@@ -135,16 +135,23 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
         ChannelPipeline p = channel.pipeline();
 
+        // 用户处理连接数据的 EventLoopGroup
         final EventLoopGroup currentChildGroup = childGroup;
+        // 用户自定义的 ChannelInitializer
         final ChannelHandler currentChildHandler = childHandler;
+
         final Entry<ChannelOption<?>, Object>[] currentChildOptions = newOptionsArray(childOptions);
         final Entry<AttributeKey<?>, Object>[] currentChildAttrs = newAttributesArray(childAttrs);
+
         final Collection<ChannelInitializerExtension> extensions = getInitializerExtensions();
 
+        // ServerBootstrap pipeline 自定义的 ChannelInitializer
+        // 在初始化 channel (监听服务的 channel, 不是连接的 channel) 时设置 handler.
         p.addLast(new ChannelInitializer<Channel>() {
             @Override
             public void initChannel(final Channel ch) {
                 final ChannelPipeline pipeline = ch.pipeline();
+                // 设置监听 handler
                 ChannelHandler handler = config.handler();
                 if (handler != null) {
                     pipeline.addLast(handler);

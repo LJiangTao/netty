@@ -40,6 +40,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ConnectionPendingException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -78,9 +79,13 @@ public abstract class AbstractNioChannel extends AbstractChannel {
      */
     protected AbstractNioChannel(Channel parent, SelectableChannel ch, int readInterestOp) {
         super(parent);
+
+        // 设定连接对象
         this.ch = ch;
+        // 设置感兴趣的操作. 默认传的是 OP_READ
         this.readInterestOp = readInterestOp;
         try {
+            // 设置非阻塞模式
             ch.configureBlocking(false);
         } catch (IOException e) {
             try {

@@ -399,19 +399,25 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     }
 
     private AbstractChannelHandlerContext remove(final AbstractChannelHandlerContext ctx) {
+
+        // 不能删除头尾固定的 channelHandler
         assert ctx != head && ctx != tail;
 
+        // 防止并发， 通过 synchronize 锁定
         synchronized (this) {
+            // 从链表中剔除当前 handler
             atomicRemoveFromHandlerList(ctx);
 
             // If the registered is false it means that the channel was not registered on an eventloop yet.
             // In this case we remove the context from the pipeline and add a task that will call
             // ChannelHandler.handlerRemoved(...) once the channel is registered.
             if (!registered) {
+                // 创建取消任务, 并在后续执行  ctx.handlerRemoved 事件.
                 callHandlerCallbackLater(ctx, false);
                 return ctx;
             }
 
+            // 调用 ctx.handlerRemoved 事件
             EventExecutor executor = ctx.executor();
             if (!executor.inEventLoop()) {
                 executor.execute(new Runnable() {
@@ -580,6 +586,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 删除 ADD_COMPLETE 状态下指定的 handler. 并在删除后将 handler 标记为 {@link REMOVE_COMPLETE}
+     * @param ctx
+     */
     private void callHandlerRemoved0(final AbstractChannelHandlerContext ctx) {
         // Notify the complete removal.
         try {
@@ -1025,8 +1035,15 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 获取 channelHandlerContext
+     * @param handler
+     * @return
+     */
     private AbstractChannelHandlerContext getContextOrDie(ChannelHandler handler) {
+        // 找到 handler
         AbstractChannelHandlerContext ctx = (AbstractChannelHandlerContext) context(handler);
+        // 如果 handler 不存在， 则抛出异常。
         if (ctx == null) {
             throw new NoSuchElementException(handler.getClass().getName());
         } else {
@@ -1066,6 +1083,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 根据 {@code added} 判断是新增 handle 还是删除 handle
+     */
     private void callHandlerCallbackLater(AbstractChannelHandlerContext ctx, boolean added) {
         assert !registered;
 

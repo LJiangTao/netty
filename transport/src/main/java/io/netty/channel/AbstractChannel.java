@@ -71,6 +71,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
         this.parent = parent;
         id = newId();
         unsafe = newUnsafe();
+        // 创建 HEAD <-> TAIL 双向 pipeline
         pipeline = newChannelPipeline();
     }
 
@@ -503,6 +504,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 if (!promise.setUncancellable() || !ensureOpen(promise)) {
                     return;
                 }
+
                 boolean firstRegistration = neverRegistered;
                 doRegister();
                 neverRegistered = false;

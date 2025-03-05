@@ -15,28 +15,6 @@
  */
 package io.netty.channel;
 
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.util.Attribute;
-import io.netty.util.AttributeKey;
-import io.netty.util.ReferenceCountUtil;
-import io.netty.util.ResourceLeakHint;
-import io.netty.util.concurrent.AbstractEventExecutor;
-import io.netty.util.concurrent.EventExecutor;
-import io.netty.util.concurrent.OrderedEventExecutor;
-import io.netty.util.internal.ObjectPool;
-import io.netty.util.internal.ObjectPool.Handle;
-import io.netty.util.internal.ObjectPool.ObjectCreator;
-import io.netty.util.internal.PromiseNotificationUtil;
-import io.netty.util.internal.ThrowableUtil;
-import io.netty.util.internal.ObjectUtil;
-import io.netty.util.internal.StringUtil;
-import io.netty.util.internal.SystemPropertyUtil;
-import io.netty.util.internal.logging.InternalLogger;
-import io.netty.util.internal.logging.InternalLoggerFactory;
-
-import java.net.SocketAddress;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
 import static io.netty.channel.ChannelHandlerMask.MASK_BIND;
 import static io.netty.channel.ChannelHandlerMask.MASK_CHANNEL_ACTIVE;
 import static io.netty.channel.ChannelHandlerMask.MASK_CHANNEL_INACTIVE;
@@ -58,17 +36,40 @@ import static io.netty.channel.ChannelHandlerMask.MASK_USER_EVENT_TRIGGERED;
 import static io.netty.channel.ChannelHandlerMask.MASK_WRITE;
 import static io.netty.channel.ChannelHandlerMask.mask;
 
+import java.net.SocketAddress;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
+import io.netty.util.ReferenceCountUtil;
+import io.netty.util.ResourceLeakHint;
+import io.netty.util.concurrent.AbstractEventExecutor;
+import io.netty.util.concurrent.EventExecutor;
+import io.netty.util.concurrent.OrderedEventExecutor;
+import io.netty.util.internal.ObjectPool;
+import io.netty.util.internal.ObjectPool.Handle;
+import io.netty.util.internal.ObjectPool.ObjectCreator;
+import io.netty.util.internal.ObjectUtil;
+import io.netty.util.internal.PromiseNotificationUtil;
+import io.netty.util.internal.StringUtil;
+import io.netty.util.internal.SystemPropertyUtil;
+import io.netty.util.internal.ThrowableUtil;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
+
 abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, ResourceLeakHint {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannelHandlerContext.class);
     volatile AbstractChannelHandlerContext next;
     volatile AbstractChannelHandlerContext prev;
 
-    private static final AtomicIntegerFieldUpdater<AbstractChannelHandlerContext> HANDLER_STATE_UPDATER =
-            AtomicIntegerFieldUpdater.newUpdater(AbstractChannelHandlerContext.class, "handlerState");
+    private static final AtomicIntegerFieldUpdater<AbstractChannelHandlerContext> HANDLER_STATE_UPDATER = AtomicIntegerFieldUpdater
+            .newUpdater(AbstractChannelHandlerContext.class, "handlerState");
 
     /**
-     * {@link ChannelHandler#handlerAdded(ChannelHandlerContext)} is about to be called.
+     * {@link ChannelHandler#handlerAdded(ChannelHandlerContext)} is about to be
+     * called.
      */
     private static final int ADD_PENDING = 1;
     /**
@@ -90,24 +91,28 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     private final boolean ordered;
     private final int executionMask;
 
-    // Will be set to null if no child executor should be used, otherwise it will be set to the
+    // Will be set to null if no child executor should be used, otherwise it will be
+    // set to the
     // child executor.
     final EventExecutor executor;
     private ChannelFuture succeededFuture;
 
-    // Lazily instantiated tasks used to trigger events to a handler with different executor.
-    // There is no need to make this volatile as at worse it will just create a few more instances then needed.
+    // Lazily instantiated tasks used to trigger events to a handler with different
+    // executor.
+    // There is no need to make this volatile as at worse it will just create a few
+    // more instances then needed.
     private Tasks invokeTasks;
 
     private volatile int handlerState = INIT;
 
     AbstractChannelHandlerContext(DefaultChannelPipeline pipeline, EventExecutor executor,
-                                  String name, Class<? extends ChannelHandler> handlerClass) {
+            String name, Class<? extends ChannelHandler> handlerClass) {
         this.name = ObjectUtil.checkNotNull(name, "name");
         this.pipeline = pipeline;
         this.executor = executor;
         this.executionMask = mask(handlerClass);
-        // Its ordered if its driven by the EventLoop or the given Executor is an instanceof OrderedEventExecutor.
+        // Its ordered if its driven by the EventLoop or the given Executor is an
+        // instanceof OrderedEventExecutor.
         ordered = executor == null || executor instanceof OrderedEventExecutor;
     }
 
@@ -347,15 +352,16 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
             } catch (Throwable error) {
                 if (logger.isDebugEnabled()) {
                     logger.debug(
-                        "An exception {}" +
-                        "was thrown by a user handler's exceptionCaught() " +
-                        "method while handling the following exception:",
-                        ThrowableUtil.stackTraceToString(error), cause);
+                            "An exception {}" +
+                                    "was thrown by a user handler's exceptionCaught() " +
+                                    "method while handling the following exception:",
+                            ThrowableUtil.stackTraceToString(error), cause);
                 } else if (logger.isWarnEnabled()) {
                     logger.warn(
-                        "An exception '{}' [enable DEBUG level for full stacktrace] " +
-                        "was thrown by a user handler's exceptionCaught() " +
-                        "method while handling the following exception:", error, cause);
+                            "An exception '{}' [enable DEBUG level for full stacktrace] " +
+                                    "was thrown by a user handler's exceptionCaught() " +
+                                    "method while handling the following exception:",
+                            error, cause);
                 }
             }
         } else {
@@ -671,7 +677,8 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     @Override
     public ChannelFuture disconnect(final ChannelPromise promise) {
         if (!channel().metadata().hasDisconnect()) {
-            // Translate disconnect to close if the channel has no notion of disconnect-reconnect.
+            // Translate disconnect to close if the channel has no notion of
+            // disconnect-reconnect.
             // So far, UDP/IP is the only transport that has such behavior.
             return close(promise);
         }
@@ -973,8 +980,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
             throw e;
         }
 
-        final AbstractChannelHandlerContext next = findContextOutbound(flush ?
-                (MASK_WRITE | MASK_FLUSH) : MASK_WRITE);
+        final AbstractChannelHandlerContext next = findContextOutbound(flush ? (MASK_WRITE | MASK_FLUSH) : MASK_WRITE);
         final Object m = pipeline.touch(msg, next);
         EventExecutor executor = next.executor();
         if (executor.inEventLoop()) {
@@ -986,7 +992,8 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         } else {
             final WriteTask task = WriteTask.newInstance(next, m, promise, flush);
             if (!safeExecute(executor, task, promise, m, !flush)) {
-                // We failed to submit the WriteTask. We need to cancel it so we decrement the pending bytes
+                // We failed to submit the WriteTask. We need to cancel it so we decrement the
+                // pending bytes
                 // and put it back in the Recycler for re-use later.
                 //
                 // See https://github.com/netty/netty/issues/8343.
@@ -1001,7 +1008,8 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     }
 
     private static void notifyOutboundHandlerException(Throwable cause, ChannelPromise promise) {
-        // Only log if the given promise is not of type VoidChannelPromise as tryFailure(...) is expected to return
+        // Only log if the given promise is not of type VoidChannelPromise as
+        // tryFailure(...) is expected to return
         // false.
         PromiseNotificationUtil.tryFailure(promise, cause, promise instanceof VoidChannelPromise ? null : logger);
     }
@@ -1034,7 +1042,8 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         ObjectUtil.checkNotNull(promise, "promise");
 
         if (promise.isDone()) {
-            // Check if the promise was cancelled and if so signal that the processing of the operation
+            // Check if the promise was cancelled and if so signal that the processing of
+            // the operation
             // should not be performed.
             //
             // See https://github.com/netty/netty/issues/2349
@@ -1085,12 +1094,14 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     private static boolean skipContext(
             AbstractChannelHandlerContext ctx, EventExecutor currentExecutor, int mask, int onlyMask) {
-        // Ensure we correctly handle MASK_EXCEPTION_CAUGHT which is not included in the MASK_EXCEPTION_CAUGHT
+        // Ensure we correctly handle MASK_EXCEPTION_CAUGHT which is not included in the
+        // MASK_EXCEPTION_CAUGHT
         return (ctx.executionMask & (onlyMask | mask)) == 0 ||
-                // We can only skip if the EventExecutor is the same as otherwise we need to ensure we offload
-                // everything to preserve ordering.
-                //
-                // See https://github.com/netty/netty/issues/10067
+        // We can only skip if the EventExecutor is the same as otherwise we need to
+        // ensure we offload
+        // everything to preserve ordering.
+        //
+        // See https://github.com/netty/netty/issues/10067
                 (ctx.executor() == currentExecutor && (ctx.executionMask & mask) == 0);
     }
 
@@ -1110,7 +1121,8 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
                 return false;
             }
             // Ensure we never update when the handlerState is REMOVE_COMPLETE already.
-            // oldState is usually ADD_PENDING but can also be REMOVE_COMPLETE when an EventExecutor is used that is not
+            // oldState is usually ADD_PENDING but can also be REMOVE_COMPLETE when an
+            // EventExecutor is used that is not
             // exposing ordering guarantees.
             if (HANDLER_STATE_UPDATER.compareAndSet(this, oldState, ADD_COMPLETE)) {
                 return true;
@@ -1120,17 +1132,27 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     final void setAddPending() {
         boolean updated = HANDLER_STATE_UPDATER.compareAndSet(this, INIT, ADD_PENDING);
-        assert updated; // This should always be true as it MUST be called before setAddComplete() or setRemoved().
+        assert updated; // This should always be true as it MUST be called before setAddComplete() or
+                        // setRemoved().
     }
 
     final void callHandlerAdded() throws Exception {
-        // We must call setAddComplete before calling handlerAdded. Otherwise if the handlerAdded method generates
-        // any pipeline events ctx.handler() will miss them because the state will not allow it.
+        // We must call setAddComplete before calling handlerAdded. Otherwise if the
+        // handlerAdded method generates
+        // any pipeline events ctx.handler() will miss them because the state will not
+        // allow it.
         if (setAddComplete()) {
             handler().handlerAdded(this);
         }
     }
 
+    /**
+     * 只有当 handler 的 {@code state} 必须为 {@link ADD_COMPLETE} 才允许删除.
+     * <p>
+     * 在发布 handlerRemoved 事件后, 会将当前 handler 的状态更改为 {@link REMOVE_COMPLETE}
+     * 
+     * @throws Exception
+     */
     final void callHandlerRemoved() throws Exception {
         try {
             // Only call handlerRemoved(...) if we called handlerAdded(...) before.
@@ -1138,17 +1160,21 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
                 handler().handlerRemoved(this);
             }
         } finally {
-            // Mark the handler as removed in any case.
+            // 标记当前的 handler 为 REMOVE_COMPLETE 状态
             setRemoved();
         }
     }
 
     /**
-     * Makes best possible effort to detect if {@link ChannelHandler#handlerAdded(ChannelHandlerContext)} was called
-     * yet. If not return {@code false} and if called or could not detect return {@code true}.
+     * Makes best possible effort to detect if
+     * {@link ChannelHandler#handlerAdded(ChannelHandlerContext)} was called
+     * yet. If not return {@code false} and if called or could not detect return
+     * {@code true}.
      *
-     * If this method returns {@code false} we will not invoke the {@link ChannelHandler} but just forward the event.
-     * This is needed as {@link DefaultChannelPipeline} may already put the {@link ChannelHandler} in the linked-list
+     * If this method returns {@code false} we will not invoke the
+     * {@link ChannelHandler} but just forward the event.
+     * This is needed as {@link DefaultChannelPipeline} may already put the
+     * {@link ChannelHandler} in the linked-list
      * but not called {@link ChannelHandler#handlerAdded(ChannelHandlerContext)}.
      */
     private boolean invokeHandler() {
@@ -1218,12 +1244,12 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
             return task;
         }
 
-        private static final boolean ESTIMATE_TASK_SIZE_ON_SUBMIT =
-                SystemPropertyUtil.getBoolean("io.netty.transport.estimateSizeOnSubmit", true);
+        private static final boolean ESTIMATE_TASK_SIZE_ON_SUBMIT = SystemPropertyUtil
+                .getBoolean("io.netty.transport.estimateSizeOnSubmit", true);
 
         // Assuming compressed oops, 12 bytes obj header, 4 ref fields and one int field
-        private static final int WRITE_TASK_OVERHEAD =
-                SystemPropertyUtil.getInt("io.netty.transport.writeTaskSizeOverhead", 32);
+        private static final int WRITE_TASK_OVERHEAD = SystemPropertyUtil
+                .getInt("io.netty.transport.writeTaskSizeOverhead", 32);
 
         private final Handle<WriteTask> handle;
         private AbstractChannelHandlerContext ctx;
@@ -1237,7 +1263,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         }
 
         protected static void init(WriteTask task, AbstractChannelHandlerContext ctx,
-                                   Object msg, ChannelPromise promise, boolean flush) {
+                Object msg, ChannelPromise promise, boolean flush) {
             task.ctx = ctx;
             task.msg = msg;
             task.promise = promise;
