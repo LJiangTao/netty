@@ -14,7 +14,9 @@
   ~ License for the specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -202,7 +204,8 @@
         <forbiddenapis.skip>true</forbiddenapis.skip>
         <!-- 1.4.x does not work in Java10+ -->
         <jboss.marshalling.version>2.0.5.Final</jboss.marshalling.version>
-        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in compile errors for
+        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in
+        compile errors for
              our EventExecutorGroup implementations
         -->
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -226,7 +229,8 @@
         <forbiddenapis.skip>true</forbiddenapis.skip>
         <!-- 1.4.x does not work in Java10+ -->
         <jboss.marshalling.version>2.0.5.Final</jboss.marshalling.version>
-        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in compile errors for
+        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in
+        compile errors for
              our EventExecutorGroup implementations
         -->
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -250,7 +254,8 @@
         <forbiddenapis.skip>true</forbiddenapis.skip>
         <!-- 1.4.x does not work in Java10+ -->
         <jboss.marshalling.version>2.0.5.Final</jboss.marshalling.version>
-        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in compile errors for
+        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in
+        compile errors for
              our EventExecutorGroup implementations
         -->
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -274,7 +279,8 @@
         <forbiddenapis.skip>true</forbiddenapis.skip>
         <!-- 1.4.x does not work in Java10+ -->
         <jboss.marshalling.version>2.0.5.Final</jboss.marshalling.version>
-        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in compile errors for
+        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in
+        compile errors for
              our EventExecutorGroup implementations
         -->
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -298,7 +304,8 @@
         <forbiddenapis.skip>true</forbiddenapis.skip>
         <!-- 1.4.x does not work in Java10+ -->
         <jboss.marshalling.version>2.0.5.Final</jboss.marshalling.version>
-        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in compile errors for
+        <!-- We need to use 1.8 as otherwise default methods are not picked up and so result in
+        compile errors for
              our EventExecutorGroup implementations
         -->
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -613,7 +620,8 @@
     <profile>
       <id>leak</id>
       <properties>
-        <argLine.leak>-Dio.netty.leakDetectionLevel=paranoid -Dio.netty.leakDetection.targetRecords=32</argLine.leak>
+        <argLine.leak>-Dio.netty.leakDetectionLevel=paranoid
+          -Dio.netty.leakDetection.targetRecords=32</argLine.leak>
       </properties>
     </profile>
     <profile>
@@ -683,7 +691,8 @@
         <jdk>[1.8,)</jdk>
       </activation>
       <properties>
-        <!-- Our Javadoc has poor enough quality to fail the build thanks to JDK8 javadoc which got more strict. -->
+        <!-- Our Javadoc has poor enough quality to fail the build thanks to JDK8 javadoc which got
+        more strict. -->
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
       </properties>
     </profile>
@@ -691,7 +700,8 @@
       <!--
       This profile exists because either ALPN or NPN can exits on the class path at once, but not both.
       The JDK version is typically used to distinguish which should be used but there is some overlap
-      where both could be used.  ALPN is the default and this profile is enabled with a -Dforcenpn=true arugument
+      where both could be used.  ALPN is the default and this profile is enabled with a -Dforcenpn=true
+      arugument
       -->
       <id>forcenpn</id>
       <activation>
@@ -715,7 +725,8 @@
     <netty.build.version>31</netty.build.version>
     <jboss.marshalling.version>1.4.11.Final</jboss.marshalling.version>
     <jetty.alpnAgent.version>2.0.10</jetty.alpnAgent.version>
-    <jetty.alpnAgent.path>"${settings.localRepository}"/org/mortbay/jetty/alpn/jetty-alpn-agent/${jetty.alpnAgent.version}/jetty-alpn-agent-${jetty.alpnAgent.version}.jar</jetty.alpnAgent.path>
+    <jetty.alpnAgent.path>
+      "${settings.localRepository}"/org/mortbay/jetty/alpn/jetty-alpn-agent/${jetty.alpnAgent.version}/jetty-alpn-agent-${jetty.alpnAgent.version}.jar</jetty.alpnAgent.path>
     <argLine.common>
       -server
       -dsa -da -ea:io.netty...
@@ -749,7 +760,8 @@
     <!--
       Don't use os.detected.classifier as it will also add the "likes" as configure above.
       ${os.detected.name}-${os.detected.arch} is the same but without "likes".
-      See https://github.com/trustin/os-maven-plugin/blob/os-maven-plugin-1.7.1/README.md#property-osdetectedclassifier
+      See
+    https://github.com/trustin/os-maven-plugin/blob/os-maven-plugin-1.7.1/README.md#property-osdetectedclassifier
     -->
     <corretto.classifier>${os.detected.name}-${os.detected.arch}</corretto.classifier>
     <jni.classifier>${os.detected.name}-${os.detected.arch}</jni.classifier>
@@ -821,6 +833,19 @@
     <module>bom</module>
   </modules>
 
+  <repositories>
+    <repository>
+      <id>aliyun</id>
+      <url>https://maven.aliyun.com/repository/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -879,7 +904,8 @@
         <version>3.0.0-alpha-5</version>
       </dependency>
 
-      <!-- Our own Tomcat Native fork - completely optional for the native lib, used for accelerating SSL with OpenSSL. -->
+      <!-- Our own Tomcat Native fork - completely optional for the native lib, used for
+      accelerating SSL with OpenSSL. -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>netty-tcnative-classes</artifactId>
@@ -1355,14 +1381,16 @@
                   <code>java.missing.oldClass</code> <!-- Missing in prior Netty versions -->
                   <old>missing-class org.slf4j.Logger</old>
                   <new>missing-class org.slf4j.Logger</new>
-                  <justification>The com.barchart.udt library exposes this class in their API, but slf4j is an optional dependency to Netty.</justification>
+                  <justification>The com.barchart.udt library exposes this class in their API, but
+                    slf4j is an optional dependency to Netty.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.missing.newClass</code> <!-- Missing in this Netty version -->
                   <old>missing-class org.slf4j.Logger</old>
                   <new>missing-class org.slf4j.Logger</new>
-                  <justification>The com.barchart.udt library exposes this class in their API, but slf4j is an optional dependency to Netty.</justification>
+                  <justification>The com.barchart.udt library exposes this class in their API, but
+                    slf4j is an optional dependency to Netty.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
@@ -1380,20 +1408,23 @@
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.removed</code>
-                  <old>method java.lang.String io.netty.testsuite.util.TestUtils::testMethodName(org.junit.rules.TestName)</old>
+                  <old>method java.lang.String
+                    io.netty.testsuite.util.TestUtils::testMethodName(org.junit.rules.TestName)</old>
                   <justification>This should be test-only, and we're removing support for JUnit 4.</justification>
                 </item>
                 <!-- Necessary changes to fix #12627 -->
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.util.AbstractReferenceCounted::setRefCnt(int) @ io.netty.handler.codec.http.multipart.MixedAttribute</new>
+                  <new>method void io.netty.util.AbstractReferenceCounted::setRefCnt(int) @
+                    io.netty.handler.codec.http.multipart.MixedAttribute</new>
                   <justification>Acceptable incompatibility for required change</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.util.AbstractReferenceCounted::setRefCnt(int) @ io.netty.handler.codec.http.multipart.MixedFileUpload</new>
+                  <new>method void io.netty.util.AbstractReferenceCounted::setRefCnt(int) @
+                    io.netty.handler.codec.http.multipart.MixedFileUpload</new>
                   <justification>Acceptable incompatibility for required change</justification>
                 </item>
                 <item>
@@ -1401,7 +1432,8 @@
                   <code>java.class.nonFinalClassInheritsFromNewClass</code>
                   <old>class io.netty.handler.codec.http.multipart.MixedFileUpload</old>
                   <new>class io.netty.handler.codec.http.multipart.MixedFileUpload</new>
-                  <superClass>io.netty.handler.codec.http.multipart.AbstractMixedHttpData&lt;io.netty.handler.codec.http.multipart.FileUpload&gt;</superClass>
+                  <superClass>
+                    io.netty.handler.codec.http.multipart.AbstractMixedHttpData&lt;io.netty.handler.codec.http.multipart.FileUpload&gt;</superClass>
                   <justification>Acceptable incompatibility for required change</justification>
                 </item>
                 <item>
@@ -1409,7 +1441,8 @@
                   <code>java.class.nonFinalClassInheritsFromNewClass</code>
                   <old>class io.netty.handler.codec.http.multipart.MixedAttribute</old>
                   <new>class io.netty.handler.codec.http.multipart.MixedAttribute</new>
-                  <superClass>io.netty.handler.codec.http.multipart.AbstractMixedHttpData&lt;io.netty.handler.codec.http.multipart.Attribute&gt;</superClass>
+                  <superClass>
+                    io.netty.handler.codec.http.multipart.AbstractMixedHttpData&lt;io.netty.handler.codec.http.multipart.Attribute&gt;</superClass>
                   <justification>Acceptable incompatibility for required change</justification>
                 </item>
                 <item>
@@ -1421,95 +1454,154 @@
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method io.netty.channel.unix.DomainSocketAddress io.netty.channel.unix.Socket::localDomainSocketAddress()</new>
+                  <new>method io.netty.channel.unix.DomainSocketAddress
+                    io.netty.channel.unix.Socket::localDomainSocketAddress()</new>
                   <justification>Acceptable incompatibility for required change</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method io.netty.channel.unix.DomainSocketAddress io.netty.channel.unix.Socket::remoteDomainSocketAddress()</new>
+                  <new>method io.netty.channel.unix.DomainSocketAddress
+                    io.netty.channel.unix.Socket::remoteDomainSocketAddress()</new>
                   <justification>Acceptable incompatibility for required change</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.returnTypeErasureChanged</code>
-                  <old>method B io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T extends io.netty.handler.codec.http2.Http2ConnectionHandler, B extends io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T, B&gt;&gt;::decoderEnforceMaxConsecutiveEmptyDataFrames(int) @ io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder</old>
-                  <new>method io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder::decoderEnforceMaxConsecutiveEmptyDataFrames(int)</new>
-                  <justification>Acceptable incompatibility for required change, because the method was not previously exposed; protected visiblity in super-class, not made public in final sub-class until now</justification>
+                  <old>method B
+                    io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T extends
+                    io.netty.handler.codec.http2.Http2ConnectionHandler, B extends
+                    io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T,
+                    B&gt;&gt;::decoderEnforceMaxConsecutiveEmptyDataFrames(int) @
+                    io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder</old>
+                  <new>
+                    method io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder
+                    io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder::decoderEnforceMaxConsecutiveEmptyDataFrames(int)</new>
+                  <justification>Acceptable incompatibility for required change, because the method
+                    was not previously exposed; protected visiblity in super-class, not made public
+                    in final sub-class until now</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.returnTypeErasureChanged</code>
-                  <old>method B io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T extends io.netty.handler.codec.http2.Http2ConnectionHandler, B extends io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T, B&gt;&gt;::decoderEnforceMaxRstFramesPerWindow(int, int) @ io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder</old>
-                  <new>method io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder::decoderEnforceMaxRstFramesPerWindow(int, int)</new>
-                  <justification>Acceptable incompatibility for required change, because the method was not previously exposed; protected visiblity in super-class, not made public in final sub-class until now</justification>
+                  <old>method B
+                    io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T extends
+                    io.netty.handler.codec.http2.Http2ConnectionHandler, B extends
+                    io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T,
+                    B&gt;&gt;::decoderEnforceMaxRstFramesPerWindow(int, int) @
+                    io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder</old>
+                  <new>method io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder
+                    io.netty.handler.codec.http2.Http2ConnectionHandlerBuilder::decoderEnforceMaxRstFramesPerWindow(int,
+                    int)</new>
+                  <justification>Acceptable incompatibility for required change, because the method
+                    was not previously exposed; protected visiblity in super-class, not made public
+                    in final sub-class until now</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.returnTypeErasureChanged</code>
-                  <old>method B io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T extends io.netty.handler.codec.http2.Http2ConnectionHandler, B extends io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T, B&gt;&gt;::encoderIgnoreMaxHeaderListSize(boolean) @ io.netty.handler.codec.http2.HttpToHttp2ConnectionHandlerBuilder</old>
-                  <new>method io.netty.handler.codec.http2.HttpToHttp2ConnectionHandlerBuilder io.netty.handler.codec.http2.HttpToHttp2ConnectionHandlerBuilder::encoderIgnoreMaxHeaderListSize(boolean)</new>
-                  <justification>Acceptable incompatibility for required change, because the method was not previously exposed; protected visiblity in super-class, not made public in final sub-class until now</justification>
+                  <old>method B
+                    io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T extends
+                    io.netty.handler.codec.http2.Http2ConnectionHandler, B extends
+                    io.netty.handler.codec.http2.AbstractHttp2ConnectionHandlerBuilder&lt;T,
+                    B&gt;&gt;::encoderIgnoreMaxHeaderListSize(boolean) @
+                    io.netty.handler.codec.http2.HttpToHttp2ConnectionHandlerBuilder</old>
+                  <new>
+                    method io.netty.handler.codec.http2.HttpToHttp2ConnectionHandlerBuilder
+                    io.netty.handler.codec.http2.HttpToHttp2ConnectionHandlerBuilder::encoderIgnoreMaxHeaderListSize(boolean)</new>
+                  <justification>Acceptable incompatibility for required change, because the method
+                    was not previously exposed; protected visiblity in super-class, not made public
+                    in final sub-class until now</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.removed</code>
-                  <old>method io.netty.channel.ChannelFactory&lt;&amp; extends io.netty.channel.socket.DatagramChannel&gt; io.netty.resolver.dns.DnsNameResolverBuilder::channelFactory()</old>
+                  <old>method io.netty.channel.ChannelFactory&lt;&amp; extends
+                    io.netty.channel.socket.DatagramChannel&gt;
+                    io.netty.resolver.dns.DnsNameResolverBuilder::channelFactory()</old>
                   <justification>Protected methods of a final class.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.returnTypeChanged</code>
-                  <old>method io.netty.channel.socket.ServerSocketChannel io.netty.channel.socket.nio.NioDomainSocketChannel::parent()</old>
-                  <new>method io.netty.channel.ServerChannel io.netty.channel.socket.nio.NioDomainSocketChannel::parent()</new>
-                  <justification>Old return type made no sense, the parent channel is a NioServerDomainSocketChannel which does not implement ServerSocketChannel. The method always threw a ClassCastException (except for null).</justification>
+                  <old>method io.netty.channel.socket.ServerSocketChannel
+                    io.netty.channel.socket.nio.NioDomainSocketChannel::parent()</old>
+                  <new>method io.netty.channel.ServerChannel
+                    io.netty.channel.socket.nio.NioDomainSocketChannel::parent()</new>
+                  <justification>Old return type made no sense, the parent channel is a
+                    NioServerDomainSocketChannel which does not implement ServerSocketChannel. The
+                    method always threw a ClassCastException (except for null).</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends io.netty.buffer.ByteBufHolder, O extends io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage()</new>
+                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends
+                    io.netty.buffer.ByteBufHolder, O extends
+                    io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage()</new>
                   <justification>Exposed private method.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends io.netty.buffer.ByteBufHolder, O extends io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @ io.netty.handler.codec.http.HttpClientUpgradeHandler</new>
+                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends
+                    io.netty.buffer.ByteBufHolder, O extends
+                    io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @
+                    io.netty.handler.codec.http.HttpClientUpgradeHandler</new>
                   <justification>Exposed private method.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends io.netty.buffer.ByteBufHolder, O extends io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @ io.netty.handler.codec.http.HttpObjectAggregator</new>
+                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends
+                    io.netty.buffer.ByteBufHolder, O extends
+                    io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @
+                    io.netty.handler.codec.http.HttpObjectAggregator</new>
                   <justification>Exposed private method.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends io.netty.buffer.ByteBufHolder, O extends io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @ io.netty.handler.codec.http.HttpServerUpgradeHandler</new>
+                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends
+                    io.netty.buffer.ByteBufHolder, O extends
+                    io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @
+                    io.netty.handler.codec.http.HttpServerUpgradeHandler</new>
                   <justification>Exposed private method.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends io.netty.buffer.ByteBufHolder, O extends io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @ io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator</new>
+                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends
+                    io.netty.buffer.ByteBufHolder, O extends
+                    io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @
+                    io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator</new>
                   <justification>Exposed private method.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends io.netty.buffer.ByteBufHolder, O extends io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @ io.netty.handler.codec.memcache.binary.BinaryMemcacheObjectAggregator</new>
+                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends
+                    io.netty.buffer.ByteBufHolder, O extends
+                    io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @
+                    io.netty.handler.codec.memcache.binary.BinaryMemcacheObjectAggregator</new>
                   <justification>Exposed private method.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends io.netty.buffer.ByteBufHolder, O extends io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @ io.netty.handler.codec.memcache.AbstractMemcacheObjectAggregator&lt;H extends io.netty.handler.codec.memcache.MemcacheMessage&gt;</new>
+                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends
+                    io.netty.buffer.ByteBufHolder, O extends
+                    io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @
+                    io.netty.handler.codec.memcache.AbstractMemcacheObjectAggregator&lt;H extends
+                    io.netty.handler.codec.memcache.MemcacheMessage&gt;</new>
                   <justification>Exposed private method.</justification>
                 </item>
                 <item>
                   <ignore>true</ignore>
                   <code>java.method.finalMethodAddedToNonFinalClass</code>
-                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends io.netty.buffer.ByteBufHolder, O extends io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @ io.netty.handler.codec.stomp.StompSubframeAggregator</new>
+                  <new>method void io.netty.handler.codec.MessageAggregator&lt;I, S, C extends
+                    io.netty.buffer.ByteBufHolder, O extends
+                    io.netty.buffer.ByteBufHolder&gt;::releaseCurrentMessage() @
+                    io.netty.handler.codec.stomp.StompSubframeAggregator</new>
                   <justification>Exposed private method.</justification>
                 </item>
               </differences>
@@ -1536,7 +1628,8 @@
             <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
             <oldVersionPattern>\d+\.\d+\.\d+\.Final</oldVersionPattern>
             <ignoreMissingClassesByRegularExpressions>
-              <!-- ignore everything which is not part of netty itself as the plugin can not handle optional dependencies -->
+              <!-- ignore everything which is not part of netty itself as the plugin can not handle
+              optional dependencies -->
               <ignoreMissingClassesByRegularExpression>^(?!io\.netty\.).*</ignoreMissingClassesByRegularExpression>
               <ignoreMissingClassesByRegularExpression>^io\.netty\.internal\.tcnative\..*</ignoreMissingClassesByRegularExpression>
             </ignoreMissingClassesByRegularExpressions>
@@ -1587,7 +1680,7 @@
                 </requireMavenVersion>
                 <requireProperty>
                   <regexMessage>
-		     x86_64/AARCH64/RISCV64/PPCLE64/s390x_64/loongarch64 JDK must be used.
+                    x86_64/AARCH64/RISCV64/PPCLE64/s390x_64/loongarch64 JDK must be used.
                   </regexMessage>
                   <property>os.detected.arch</property>
                   <regex>^(x86_64|aarch_64|riscv64|ppcle_64|s390_64|loongarch_64)$</regex>
@@ -1686,7 +1779,8 @@
               <encoding>UTF-8</encoding>
               <sourceDirectories>${basedir}</sourceDirectories>
               <includes>**/*</includes>
-              <excludes>nohttp-checkstyle-suppressions.xml,**/.git/**/*,**/.idea/**/*,**/target/**/,**/.flattened-pom.xml,**/*.class</excludes>
+              <excludes>
+                nohttp-checkstyle-suppressions.xml,**/.git/**/*,**/.idea/**/*,**/target/**/,**/.flattened-pom.xml,**/*.class</excludes>
             </configuration>
             <goals>
               <goal>check</goal>
@@ -1773,11 +1867,14 @@
           <systemPropertyVariables>
             <logback.configurationFile>${logging.config}</logback.configurationFile>
             <logLevel>${logging.logLevel}</logLevel>
-            <!-- Used by ChannelHandlerMetadataUtil to create the recommended directory layout for native-image metadata -->
+            <!-- Used by ChannelHandlerMetadataUtil to create the recommended directory layout for
+            native-image metadata -->
             <nativeImage.handlerMetadataGroupId>${project.groupId}</nativeImage.handlerMetadataGroupId>
             <nativeimage.handlerMetadataArtifactId>${project.artifactId}</nativeimage.handlerMetadataArtifactId>
           </systemPropertyVariables>
-          <argLine>${argLine.common} ${argLine.printGC} ${argLine.alpnAgent} ${argLine.leak} ${argLine.coverage} ${argLine.noUnsafe} ${argLine.jni} ${argLine.java9} ${argLine.javaProperties} -Dio.netty.bootstrap.extensions=serviceload</argLine>
+          <argLine>${argLine.common} ${argLine.printGC} ${argLine.alpnAgent} ${argLine.leak}
+            ${argLine.coverage} ${argLine.noUnsafe} ${argLine.jni} ${argLine.java9}
+            ${argLine.javaProperties} -Dio.netty.bootstrap.extensions=serviceload</argLine>
           <properties>
             <property>
               <name>listener</name>
@@ -1786,7 +1883,8 @@
           </properties>
           <skipTests>${skipTests}</skipTests>
           <jvm>${testJvm}</jvm>
-           <!-- Ensure the whole stacktrace is preserved when an exception is thrown. See https://issues.apache.org/jira/browse/SUREFIRE-1457 -->
+          <!-- Ensure the whole stacktrace is preserved when an exception is thrown. See
+          https://issues.apache.org/jira/browse/SUREFIRE-1457 -->
           <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
@@ -1810,7 +1908,8 @@
               <instructions>
                 <Export-Package>${project.groupId}.*</Export-Package>
                 <!-- enforce JVM vendor package as optional -->
-                <Import-Package>sun.net.dns.*;resolution:=optional,sun.misc.*;resolution:=optional,sun.nio.ch;resolution:=optional,sun.security.*;resolution:=optional,org.eclipse.jetty.npn;version="[1,2)";resolution:=optional,org.eclipse.jetty.alpn;version="[1,2)";resolution:=optional,org.bouncycastle.jcajce.provider;version="[1.0,2)";resolution:=optional,*</Import-Package>
+                <Import-Package>
+                  sun.net.dns.*;resolution:=optional,sun.misc.*;resolution:=optional,sun.nio.ch;resolution:=optional,sun.security.*;resolution:=optional,org.eclipse.jetty.npn;version="[1,2)";resolution:=optional,org.eclipse.jetty.alpn;version="[1,2)";resolution:=optional,org.bouncycastle.jcajce.provider;version="[1.0,2)";resolution:=optional,*</Import-Package>
                 <!-- override "internal" private package convention -->
                 <Private-Package>!*</Private-Package>
               </instructions>
@@ -1847,7 +1946,8 @@
               <Bundle-SymbolicName>${project.groupId}.${project.artifactId}.source</Bundle-SymbolicName>
               <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
               <Bundle-Version>${parsedVersion.osgiVersion}</Bundle-Version>
-              <Eclipse-SourceBundle>${project.groupId}.${project.artifactId};version="${parsedVersion.osgiVersion}";roots:="."</Eclipse-SourceBundle>
+              <Eclipse-SourceBundle>
+                ${project.groupId}.${project.artifactId};version="${parsedVersion.osgiVersion}";roots:="."</Eclipse-SourceBundle>
             </manifestEntries>
           </archive>
         </configuration>
@@ -1930,18 +2030,27 @@
                 <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
                 <!-- Get the information about the latest commit -->
-                <exec executable="git" outputproperty="gitOutput.lastCommit" resultproperty="gitExitCode.lastCommit" failonerror="false" failifexecutionfails="false">
+                <exec executable="git" outputproperty="gitOutput.lastCommit"
+                  resultproperty="gitExitCode.lastCommit" failonerror="false"
+                  failifexecutionfails="false">
                   <arg value="log" />
                   <arg value="-1" />
                   <arg value="--format=format:%h %H %cd" />
                   <arg value="--date=iso" />
                 </exec>
-                <propertyregex property="shortCommitHash" input="${gitOutput.lastCommit}" regexp="^([0-9a-f]+) .*$" select="\1" casesensitive="true" defaultValue="0" />
-                <propertyregex property="longCommitHash" input="${gitOutput.lastCommit}" regexp="^[0-9a-f]+ ([0-9a-f]{40}) .*$" select="\1" casesensitive="true" defaultValue="0000000000000000000000000000000000000000" />
-                <propertyregex property="commitDate" input="${gitOutput.lastCommit}" regexp="^[0-9a-f]+ [0-9a-f]{40} (.*)$" select="\1" casesensitive="true" defaultValue="1970-01-01 00:00:00 +0000" />
+                <propertyregex property="shortCommitHash" input="${gitOutput.lastCommit}"
+                  regexp="^([0-9a-f]+) .*$" select="\1" casesensitive="true" defaultValue="0" />
+                <propertyregex property="longCommitHash" input="${gitOutput.lastCommit}"
+                  regexp="^[0-9a-f]+ ([0-9a-f]{40}) .*$" select="\1" casesensitive="true"
+                  defaultValue="0000000000000000000000000000000000000000" />
+                <propertyregex property="commitDate" input="${gitOutput.lastCommit}"
+                  regexp="^[0-9a-f]+ [0-9a-f]{40} (.*)$" select="\1" casesensitive="true"
+                  defaultValue="1970-01-01 00:00:00 +0000" />
 
                 <!-- Get the information abount whether the repository is clean or dirty -->
-                <exec executable="git" outputproperty="gitOutput.repoStatus" resultproperty="gitExitCode.repoStatus" failonerror="false" failifexecutionfails="false">
+                <exec executable="git" outputproperty="gitOutput.repoStatus"
+                  resultproperty="gitExitCode.repoStatus" failonerror="false"
+                  failifexecutionfails="false">
                   <arg value="status" />
                   <arg value="--porcelain" />
                 </exec>
@@ -1971,13 +2080,15 @@
                 <property name="metaInfDir" value="${project.basedir}/src/main/resources/META-INF" />
                 -->
                 <property name="metaInfDir" value="${project.build.outputDirectory}/META-INF" />
-                <property name="versionPropFile" value="${metaInfDir}/${project.groupId}.versions.properties" />
+                <property name="versionPropFile"
+                  value="${metaInfDir}/${project.groupId}.versions.properties" />
                 <mkdir dir="${metaInfDir}" />
                 <delete file="${versionPropFile}" quiet="true" />
 
                 <propertyfile file="${versionPropFile}" comment="Generated by netty-parent/pom.xml">
                   <entry key="${project.artifactId}.version" value="${project.version}" />
-                  <entry key="${project.artifactId}.buildDate" type="date" value="now" pattern="yyyy-MM-dd HH:mm:ss Z" />
+                  <entry key="${project.artifactId}.buildDate" type="date" value="now"
+                    pattern="yyyy-MM-dd HH:mm:ss Z" />
                   <entry key="${project.artifactId}.commitDate" value="${commitDate}" />
                   <entry key="${project.artifactId}.shortCommitHash" value="${shortCommitHash}" />
                   <entry key="${project.artifactId}.longCommitHash" value="${longCommitHash}" />
@@ -2199,7 +2310,9 @@
                 <signaturesFiles>
                   <signaturesFile>${netty.dev.tools.directory}/forbidden/signatures.txt</signaturesFile>
                 </signaturesFiles>
-                <suppressAnnotations><annotation>**.SuppressForbidden</annotation></suppressAnnotations>
+                <suppressAnnotations>
+                  <annotation>**.SuppressForbidden</annotation>
+                </suppressAnnotations>
               </configuration>
               <phase>compile</phase>
               <goals>
@@ -2223,7 +2336,9 @@
                 <signaturesFiles>
                   <signaturesFile>${netty.dev.tools.directory}/forbidden/signatures.txt</signaturesFile>
                 </signaturesFiles>
-                <suppressAnnotations><annotation>**.SuppressForbidden</annotation></suppressAnnotations>
+                <suppressAnnotations>
+                  <annotation>**.SuppressForbidden</annotation>
+                </suppressAnnotations>
               </configuration>
               <phase>test-compile</phase>
               <goals>

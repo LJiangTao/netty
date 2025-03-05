@@ -135,7 +135,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
         ChannelPipeline p = channel.pipeline();
 
-        // 用户处理连接数据的 EventLoopGroup
+        // 处理连接数据的 EventLoopGroup
         final EventLoopGroup currentChildGroup = childGroup;
         // 用户自定义的 ChannelInitializer
         final ChannelHandler currentChildHandler = childHandler;
@@ -145,8 +145,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
         final Collection<ChannelInitializerExtension> extensions = getInitializerExtensions();
 
-        // ServerBootstrap pipeline 自定义的 ChannelInitializer
-        // 在初始化 channel (监听服务的 channel, 不是连接的 channel) 时设置 handler.
+        // ServerBootstrap 自带的 ChannelInitializer. 将 ServerBootstrap.handler 封装到里面.
         p.addLast(new ChannelInitializer<Channel>() {
             @Override
             public void initChannel(final Channel ch) {
@@ -160,6 +159,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
                 ch.eventLoop().execute(new Runnable() {
                     @Override
                     public void run() {
+                        // 用户
                         pipeline.addLast(new ServerBootstrapAcceptor(
                                 ch, currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs,
                                 extensions));
@@ -192,6 +192,9 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         return this;
     }
 
+    /**
+     * 用于设置连接注册, 设置属性, pipeline 等.
+     */
     private static class ServerBootstrapAcceptor extends ChannelInboundHandlerAdapter {
 
         private final EventLoopGroup childGroup;
@@ -229,6 +232,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
             final Channel child = (Channel) msg;
 
+            // 将 ChannelInitializer 添加到 child pipeline 中
             child.pipeline().addLast(childHandler);
 
             setChannelOptions(child, childOptions, logger);
@@ -245,6 +249,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
             }
 
             try {
+                // 将 channel 注册到 childGroup 中
                 childGroup.register(child).addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {

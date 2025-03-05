@@ -64,8 +64,9 @@ public final class DiscardServer {
 - `childHandler(ChannelHandler childHandler)`
 `childHandler` 一般都使用 `ChannelInitializer`, 一个 `ChannelInitializer` 可以对连接的 `pipeline` 进行多次配置, 且在配置完成后会从 `pipeline` 中移除.
 
-## 启动详解
+## 2.1 启动详解
 
+### 2.1.1 bind
 在进行 `bind(PORT)` 操作时整个服务端初始化流程就正式开始.
 
 ```java
@@ -92,6 +93,8 @@ private ChannelFuture doBind(final SocketAddress localAddress) {
     // ... ignored
 }
 ```
+### 2.1.2 initAndRegister
+该方法主要实例化 channel, 并将 channel 初始化且注册到 Selector 上. 
 
 ```java
 final ChannelFuture initAndRegister() {
@@ -123,6 +126,8 @@ final ChannelFuture initAndRegister() {
 
 abstract void init(Channel channel) throws Exception;
 ```
+
+### 2.1.3 `init()` 的实现
 
 `init()` 方法由 Boostrap 实现类自己实现, 我们使用了 ServerBootstrap.
 
@@ -159,6 +164,7 @@ void init(Channel channel) {
                 pipeline.addLast(handler);
             }
 
+            // 这里异步的意义是 启动 EventLoop
             ch.eventLoop().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -181,9 +187,17 @@ void init(Channel channel) {
 
 这内部创建了一个 `ChannelInitializer` 对象, 其包含了2个 Handler. 一个是用户通过 `ServerBoostrap.handler(ChannelHandler)` 定义的, 一个是 netty 强制增加的 `ServerBootstrapAcceptor`. 
 
-还需要注意一点, `ChannelInitializer` 这个虽然通过 `addLast` 添加到了 `pipeline` 中. 但实际这个 `Handler` 状态是 `ADD_PENDING` 状态, 是无法调用的.
+还需要注意一点, `ChannelInitializer` 这个虽然通过 `addLast` 添加到了 `pipeline` 中. 但实际这个 `Handler` 状态是 `ADD_PENDING` 状态, 在这个状态下的 handler 是无法对数据进行传播的.
+> 这主要体现在 io.netty.channel.AbstractChannelHandlerContext.invokeHandler 中
+> ```java
+>private boolean invokeHandler() {
+>    // Store in local variable to reduce volatile reads.
+>    int handlerState = this.handlerState;
+>   return handlerState == ADD_COMPLETE || (!ordered && handlerState == ADD_PENDING);
+>}
+>```
 
-那目前 init() 方法结束之后, `pipeline` 将会长成这样:
+目前的 `pipeline` 将会长成这样:
 
 ```mermaid
 graph TB
@@ -202,8 +216,124 @@ subgraph ChannelInitializer
 INIT --> CUST --> SERV
 
 end
+```
+这时的 `pipeline` 还存有 `ChannelInitializer`, 所以这个 `pipeline` 实际还未完成初始化.
 
+之后通过 `register(channel)` 将 channel 注册到 Selector 上.
 
+### 2.1.4 register 将 channel 注册到 Selector 中.
+```java
+@Override
+public ChannelFuture register(Channel channel) {
+    return register(new DefaultChannelPromise(channel, this));
+}
+
+@Override
+public ChannelFuture register(final ChannelPromise promise) {
+    promise.channel().unsafe().register(this, promise);
+    return promise;
+}
+
+@Override
+public final void register(EventLoop eventLoop, final ChannelPromise promise) {
+  // ignored
+  if (eventLoop.inEventLoop()) {
+    register0(promise);
+  } else {
+    try {
+      eventLoop.execute(new Runnable() {
+        @Override
+        public void run() {
+          register0(promise);
+        }
+      });
+    } catch (Throwable t) {
+      logger.warn(
+              "Force-closing a channel whose registration task was not accepted by an event loop: {}",
+              AbstractChannel.this, t);
+      closeForcibly();
+      closeFuture.setClosed();
+      safeSetFailure(promise, t);
+    }
+  }
+}
 ```
 
-这是的 `pipeline` 还未初始化, 所有的
+其最终都会调用 `register0` 这个方法, 这个方法的实现取决于其子类实现. 下面将使用 `AbstractUnsafe` 的实现进行解析.
+
+```java
+private void register0(ChannelPromise promise) {
+    try {
+
+        // ignored 
+      
+        boolean firstRegistration = neverRegistered;
+        
+        // 将 channel 注册到 Selector 上
+        doRegister();
+        neverRegistered = false;
+        registered = true;
+
+        // 这里会对所有 addLast() 等方法添加的 handle 进行初始化.
+        // 主要做2步: 1.标记 handler 为 ADD_COMPLETE. 2. 执行 handler 的 handlerAdded 
+        pipeline.invokeHandlerAddedIfNeeded();
+
+        safeSetSuccess(promise);
+        // 广播通道注册成功通知.
+        pipeline.fireChannelRegistered();
+        // Only fire a channelActive if the channel has never been registered. This prevents firing
+        // multiple channel actives if the channel is deregistered and re-registered.
+        if (isActive()) {
+            if (firstRegistration) {
+                pipeline.fireChannelActive();
+            } else if (config().isAutoRead()) {
+                // This channel was registered before and autoRead() is set. This means we need to begin read
+                // again so that we process inbound data.
+                //
+                // See https://github.com/netty/netty/issues/4805
+                beginRead();
+            }
+        }
+    } catch (Throwable t) {
+        // Close the channel directly to avoid FD leak.
+        closeForcibly();
+        closeFuture.setClosed();
+        safeSetFailure(promise, t);
+    }
+}
+```
+
+这样 channel 就成功的注册到 Selector 上了. 
+
+还记得之前添加的到 pipeline 中的 `ChannelInitializer` 吗? 上方的 `register0` 方法中的 `pipeline.invokeHandlerAddedIfNeeded()`
+中对所有 `pipeline` 中未初始化的 handler 进行了初始化.
+
+
+### 2.2.1 端口绑定
+在 `initAndRegister` 完成后, 当前 channel 已经成功的注册到了 Selector. 之后需要绑定端口
+
+```java
+private static void doBind0(
+        final ChannelFuture regFuture, final Channel channel,
+        final SocketAddress localAddress, final ChannelPromise promise) {
+
+    // 将绑定封装为一个 Task 交由 EventLoop 执行
+    // This method is invoked before channelRegistered() is triggered.  Give user handlers a chance to set up
+    // the pipeline in its channelRegistered() implementation.
+    channel.eventLoop().execute(new Runnable() {
+        @Override
+        public void run() {
+            if (regFuture.isSuccess()) {
+                channel.bind(localAddress, promise).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+            } else {
+                promise.setFailure(regFuture.cause());
+            }
+        }
+    });
+}
+```
+
+> 这里为什么要将其包装为异步任务丢入到 EventLoop 中?
+> 其实是主流程 `register0` 并未执行完成, 所以为了保证主流程结束, 将绑定丢入异步任务中.
+
+绑定时会从 `pipeline` 的末尾往前广播 `bind` 请求信息. 直到 `HeadHandlerContext` 执行最后的端口绑定操作.
